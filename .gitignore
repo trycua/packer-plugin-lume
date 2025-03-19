@@ -7,3 +7,7 @@ crash.log
 dist/*
 .docs/*
 docs.zip
+
+packer-debug.log
+packer-plugin-lume
+build/plugins
