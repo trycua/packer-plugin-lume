@@ -3,7 +3,7 @@ packer {
     lume = {
       version = ">= v0.0.1"
       # version = "= 0.0.1-dev"
-      source = "github.com/warpbuilds/lume"
+      source = "github.com/trycua/packer-plugin-lume"
     }
   }
 }
