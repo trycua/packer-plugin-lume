@@ -1,90 +1,105 @@
-# Packer Plugin Scaffolding
+<div align="center">
+<h1>
+  <div class="image-wrapper" style="display: inline-block;">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" alt="logo" height="150" srcset="img/logo_white.png" style="display: block; margin: auto;">
+      <source media="(prefers-color-scheme: light)" alt="logo" height="150" srcset="img/logo_black.png" style="display: block; margin: auto;">
+      <img alt="Shows my svg">
+    </picture>
+  </div>
 
-This repository is a template for a Packer multi-component plugin. It is intended as a starting point for creating Packer plugins, containing:
-- A builder ([builder/scaffolding](builder/scaffolding))
-- A provisioner ([provisioner/scaffolding](provisioner/scaffolding))
-- A post-processor ([post-processor/scaffolding](post-processor/scaffolding))
-- A data source ([datasource/scaffolding](datasource/scaffolding))
-- Docs ([docs](docs))
-- A working example ([example](example))
+  [![Go](https://img.shields.io/badge/Go-00ADD8?logo=go&logoColor=white&labelColor=00ADD8)](#)
+  [![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=F0F0F0)](#)
+  [![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?&logo=discord&logoColor=white)](https://discord.com/invite/mVnXXpdE85)
+</h1>
+</div>
 
-These folders contain boilerplate code that you will need to edit to create your own Packer multi-component plugin.
-A full guide to creating Packer plugins can be found at [Extending Packer](https://www.packer.io/docs/plugins/creation).
+**packer-plugin-lume** is a Packer plugin for building macOS and Linux VM images with [Lume](https://github.com/trycua/cua/tree/main/libs/lume) on Apple Silicon. It provides automated VM creation and provisioning through Lume's CLI/API.
 
-In this repository you will also find a pre-defined GitHub Action configuration for the release workflow
-(`.goreleaser.yml` and `.github/workflows/release.yml`). The release workflow configuration makes sure the GitHub
-release artifacts are created with the correct binaries and naming conventions.
+## Installation
 
-Please see the [GitHub template repository documentation](https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template)
-for how to create a new repository from this template on GitHub.
+### Prerequisites
 
-## Packer plugin projects
+```bash
+# Install Go
+brew install golang
 
-Here's a non exaustive list of Packer plugins that you can checkout:
-
-* [github.com/hashicorp/packer-plugin-docker](https://github.com/hashicorp/packer-plugin-docker)
-* [github.com/exoscale/packer-plugin-exoscale](https://github.com/exoscale/packer-plugin-exoscale)
-* [github.com/sylviamoss/packer-plugin-comment](https://github.com/sylviamoss/packer-plugin-comment)
-* [github.com/hashicorp/packer-plugin-hashicups](https://github.com/hashicorp/packer-plugin-hashicups)
-
-Looking at their code will give you good examples.
-
-## Build from source
-
-1. Clone this GitHub repository locally.
-
-2. Run this command from the root directory: 
-```shell 
-go build -ldflags="-X github.com/hashicorp/packer-plugin-scaffolding/version.VersionPrerelease=dev" -o packer-plugin-scaffolding
+# Install Packer
+brew tap hashicorp/tap
+brew install hashicorp/tap/packer
 ```
 
-3. After you successfully compile, the `packer-plugin-scaffolding` plugin binary file is in the root directory. 
+### Steps
 
-4. To install the compiled plugin, run the following command 
-```shell
-packer plugins install --path packer-plugin-scaffolding github.com/hashicorp/scaffolding
+1. Install Lume if you haven't already:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/trycua/cua/main/libs/lume/scripts/install.sh)"
 ```
 
-### Build on *nix systems
-Unix like systems with the make, sed, and grep commands installed can use the `make dev` to execute the build from source steps. 
+2. Obtain a macOS IPSW restore image:
+```bash
+# Get the latest macOS IPSW download URL
+lume ipsw
 
-### Build on Windows Powershell
-The preferred solution for building on Windows are steps 2-4 listed above.
-If you would prefer to script the building process you can use the following as a guide
-
-```powershell
-$MODULE_NAME = (Get-Content go.mod | Where-Object { $_ -match "^module"  }) -replace 'module ',''
-$FQN = $MODULE_NAME -replace 'packer-plugin-',''
-go build -ldflags="-X $MODULE_NAME/version.VersionPrerelease=dev" -o packer-plugin-scaffolding.exe
-packer plugins install --path packer-plugin-scaffolding.exe $FQN
+# Download the IPSW image (this may take a while)
+curl -o macOS.ipsw [URL from previous command]
 ```
 
-## Running Acceptance Tests
+3. Build and install the plugin:
 
-Make sure to install the plugin locally using the steps in [Build from source](#build-from-source).
-
-Once everything needed is set up, run:
-```
-PACKER_ACC=1 go test -count 1 -v ./... -timeout=120m
+```bash
+make dev
 ```
 
-This will run the acceptance tests for all plugins in this set.
+4. Navigate to the `bin` directory and customize `variables.hcl` with your desired configuration and full path to the IPSW image:
+```bash
+cd bin
 
-## Registering Plugin as Packer Integration
+# Edit variables.hcl to set vm_name, cpu_count, memory, and path of a IPSW image.
+```
 
-Partner and community plugins can be hard to find if a user doesn't know what 
-they are looking for. To assist with plugin discovery Packer offers an integration
-portal at https://developer.hashicorp.com/packer/integrations to list known integrations 
-that work with the latest release of Packer. 
+## Usage Example
 
-Registering a plugin as an integration requires [metadata configuration](./metadata.hcl) within the plugin
-repository and approval by the Packer team. To initiate the process of registering your 
-plugin as a Packer integration refer to the [Developing Plugins](https://developer.hashicorp.com/packer/docs/plugins/creation#registering-plugins) page.
+Run the build:
 
-# Requirements
+```bash
+packer build -var-file=variables.hcl macOS-15.arm64.lume.prepare-01.pkr.hcl
+```
 
--	[packer-plugin-sdk](https://github.com/hashicorp/packer-plugin-sdk) >= v0.5.2
--	[Go](https://golang.org/doc/install) >= 1.20
+## Configuration Reference
 
-## Packer Compatibility
-This scaffolding template is compatible with Packer >= v1.10.2
+### Builder Configuration
+
+| Parameter | Description | Type | Default |
+|-----------|-------------|------|---------|
+| `vm_name` | Name for the VM | string | Required |
+| `vm_base_name` | Base VM to clone | string | Optional |
+| `ipsw` | Path to IPSW file or 'latest' | string | Optional |
+| `cpu_count` | Number of CPU cores | number | 4 |
+| `memory` | Memory size | string | "4GB" |
+| `disk_size` | Disk size | string | "40GB" |
+| `display` | Display resolution | string | "1024x768" |
+| `headless` | Run without display | boolean | false |
+| `recovery_mode` | Start in recovery mode | boolean | false |
+| `ssh_username` | SSH username | string | Required |
+| `ssh_password` | SSH password | string | Required |
+| `ssh_timeout` | SSH connection timeout | string | "10m" |
+
+## Contributing
+
+We welcome and greatly appreciate contributions to packer-plugin-lume! Whether you're improving documentation, adding new features, fixing bugs, your efforts help make this packer plugin better for everyone.
+
+Join our [Discord community](https://discord.com/invite/mVnXXpdE85) to discuss ideas or get assistance.
+
+## Acknowledgements
+
+Special thanks to [PrashantRaj18198](https://github.com/PrashantRaj18198) for the original implementation of the Lume plugin for Packer.
+
+## License
+
+This project is licensed under the MPL-2.0 License - see the [LICENSE](LICENSE) file for details.
+
+## Trademarks
+
+Apple, macOS, and Apple Silicon are trademarks of Apple Inc. Ubuntu and Canonical are registered trademarks of Canonical Ltd. This project is not affiliated with, endorsed by, or sponsored by Apple Inc. or Canonical Ltd. 
