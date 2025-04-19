@@ -96,7 +96,7 @@ Join our [Discord community](https://discord.com/invite/mVnXXpdE85) to discuss i
 
 The macOS boot command setup were adapted from the excellent work by [Cirrus Labs](https://github.com/cirruslabs/macos-image-templates), which is licensed under the [MIT License](https://github.com/cirruslabs/macos-image-templates/blob/master/LICENSE). Proper attribution is provided in accordance with the license terms.
 
-Thanks to [PrashantRaj18198](https://github.com/PrashantRaj18198) for starting off the work to port the Packer plugin to Lume.
+Thanks to [PrashantRaj18198](https://github.com/PrashantRaj18198) for starting off the work to port the Tart Packer plugin to Lume.
 
 ## License
 
