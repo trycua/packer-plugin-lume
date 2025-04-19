@@ -62,6 +62,7 @@ source "lume-cli" "lume" {
 
   # headless     = true
 
+  # Modified from https://github.com/cirruslabs/macos-image-templates/blob/5f66cb1ca2f31ddbbdff34be5e3561584cd67d4b/templates/vanilla-sequoia.pkr.hcl
   boot_command = [
     # hello, hola, bonjour, etc.
     "<wait60s><spacebar>",
