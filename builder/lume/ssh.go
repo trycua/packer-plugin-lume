@@ -12,7 +12,7 @@ var localIPv4Regex = regexp.MustCompile(`\b((?:[0-9]{1,3}\.){3}[0-9]{1,3})\b`)
 
 func LumeMachineIP(ctx context.Context, vmName string, ui packer.Ui, ipExtraArgs []string) (string, error) {
 	ipArgs := []string{fmt.Sprintf("lume get %s | tail -n 1 | awk '{ print $8 }'", vmName)}
-	// ipArgs := []string{fmt.Sprintf("arp -a | grep -i $(cat /Users/administrator/.lume/%s/config.json | jq -r '.macAddress')", vmName)}
+	// ipArgs := []string{fmt.Sprintf("arp -a | grep -i $(cat ~/.lume/%s/config.json | jq -r '.macAddress')", vmName)}
 	outChan, errChan := LumeExec().
 		WithContext(ctx).
 		WithSleep(1).
